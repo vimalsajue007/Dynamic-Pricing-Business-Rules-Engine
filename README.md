@@ -20,46 +20,12 @@ Base Price → Applicable Rules → Discounts → Additional Charges → Tax →
 | Database   | MySQL 8.0 |
 | Infra      | Docker & Docker Compose |
 
-## Project layout
 
-```
-pricing-engine/
-├── backend/
-│   ├── app/
-│   │   ├── core/         # config, db session, security, redis, logging, exceptions
-│   │   ├── models/        # SQLAlchemy models
-│   │   ├── schemas/       # Pydantic request/response schemas
-│   │   ├── api/v1/        # route handlers (thin — orchestration only)
-│   │   ├── services/
-│   │   │   ├── pricing_engine.py   # <- the reusable rules/pricing engine
-│   │   │   └── cache_service.py
-│   │   └── main.py
-│   ├── alembic/            # migrations
-│   ├── tests/               # pytest unit tests for the pricing engine
-│   ├── seed_data.py         # optional demo data
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
-├── frontend/
-│   ├── src/
-│   │   ├── pages/           # Dashboard, Products, Customers, Pricing Rules,
-│   │   │                     Promotions, Pricing Preview, Rule Testing, History
-│   │   ├── components/      # Layout (sidebar/topbar), ProtectedRoute
-│   │   ├── context/          # AuthContext (JWT + refresh)
-│   │   ├── api/client.ts     # Axios instance with auto token refresh
-│   │   └── theme/theme.ts    # "Nocturne Violet" MUI theme
-│   ├── Dockerfile
-│   └── .env.example
-├── docker-compose.yml
-└── postman_collection.json
-```
 
 ## Quick start (Docker — recommended)
 
 ```bash
 cp backend/.env.example backend/.env
-# edit backend/.env and set a real SECRET_KEY:
-#   python -c "import secrets; print(secrets.token_urlsafe(48))"
 
 docker compose up --build
 ```
@@ -91,10 +57,7 @@ cd backend
 python -m venv .venv 
 Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env   # then edit MYSQL_HOST=localhost, set a real SECRET_KEY, etc.
-
-# create the database first, e.g.:
-#   mysql -u root -p -e "CREATE DATABASE pricing_engine CHARACTER SET utf8mb4;"
+cp .env.example .env  
 
 alembic upgrade head
 uvicorn app.main:app --reload
