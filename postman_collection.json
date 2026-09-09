@@ -1,0 +1,278 @@
+{
+  "info": {
+    "name": "Dynamic Pricing & Business Rules Engine",
+    "description": "API collection for the pricing engine. Set {{base_url}} (default http://localhost:8000/api/v1). Login populates {{access_token}} and {{refresh_token}} automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api/v1" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "product_id", "value": "1" },
+    { "key": "customer_id", "value": "1" },
+    { "key": "rule_id", "value": "1" },
+    { "key": "category_id", "value": "1" },
+    { "key": "promo_id", "value": "1" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"System Admin\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@12345\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const data = pm.response.json();",
+                  "if (data && data.data) {",
+                  "  pm.collectionVariables.set('access_token', data.data.access_token);",
+                  "  pm.collectionVariables.set('refresh_token', data.data.refresh_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@12345\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}" }
+          }
+        },
+        { "name": "Get Me", "request": { "method": "GET", "url": "{{base_url}}/auth/me" } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        { "name": "List Categories", "request": { "method": "GET", "url": "{{base_url}}/categories?page=1&page_size=20" } },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/categories",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Gadgets and devices\"\n}" }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/categories/{{category_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" }
+          }
+        },
+        { "name": "Delete Category", "request": { "method": "DELETE", "url": "{{base_url}}/categories/{{category_id}}" } }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        { "name": "List Products", "request": { "method": "GET", "url": "{{base_url}}/products?page=1&page_size=20&sort_by=created_at&sort_dir=desc" } },
+        { "name": "Get Product", "request": { "method": "GET", "url": "{{base_url}}/products/{{product_id}}" } },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/products",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Wireless Headphones\",\n  \"sku\": \"ELEC-001\",\n  \"description\": \"Noise cancelling\",\n  \"base_price\": 99.99,\n  \"category_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/products/{{product_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"base_price\": 89.99\n}" }
+          }
+        },
+        { "name": "Delete Product", "request": { "method": "DELETE", "url": "{{base_url}}/products/{{product_id}}" } }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        { "name": "List Customers", "request": { "method": "GET", "url": "{{base_url}}/customers?page=1&page_size=20" } },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/customers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Sharma\",\n  \"email\": \"priya@example.com\",\n  \"customer_type\": \"Premium\",\n  \"location\": \"Chennai\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/customers/{{customer_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"location\": \"Coimbatore\"\n}" }
+          }
+        },
+        { "name": "Delete Customer", "request": { "method": "DELETE", "url": "{{base_url}}/customers/{{customer_id}}" } }
+      ]
+    },
+    {
+      "name": "Pricing Rules",
+      "item": [
+        { "name": "List Rules", "request": { "method": "GET", "url": "{{base_url}}/pricing-rules?page=1&page_size=20" } },
+        { "name": "Get Rule", "request": { "method": "GET", "url": "{{base_url}}/pricing-rules/{{rule_id}}" } },
+        {
+          "name": "Create Rule (Premium 10%)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/pricing-rules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Customer Discount\",\n  \"description\": \"10% off for Premium customers\",\n  \"priority\": 10,\n  \"condition_logic\": \"AND\",\n  \"is_exclusive\": false,\n  \"is_stackable\": true,\n  \"conditions\": [\n    { \"field\": \"customer_type\", \"operator\": \"equals\", \"value\": \"Premium\" }\n  ],\n  \"actions\": [\n    { \"action_type\": \"percent_discount\", \"value\": 10 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Rule (Electronics bulk AND)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/pricing-rules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Electronics Bulk Bonus\",\n  \"priority\": 15,\n  \"condition_logic\": \"AND\",\n  \"conditions\": [\n    { \"field\": \"category\", \"operator\": \"equals\", \"value\": \"Electronics\" },\n    { \"field\": \"quantity\", \"operator\": \"greater_or_equal\", \"value\": \"5\" }\n  ],\n  \"actions\": [\n    { \"action_type\": \"percent_discount\", \"value\": 8, \"max_amount\": 200 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Rule",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/pricing-rules/{{rule_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": true,\n  \"priority\": 5\n}" }
+          }
+        },
+        { "name": "Delete Rule", "request": { "method": "DELETE", "url": "{{base_url}}/pricing-rules/{{rule_id}}" } }
+      ]
+    },
+    {
+      "name": "Promotions",
+      "item": [
+        { "name": "List Promotions", "request": { "method": "GET", "url": "{{base_url}}/promotions?page=1&page_size=20" } },
+        {
+          "name": "Create Promotion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/promotions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME20\",\n  \"description\": \"20% off, capped at $50\",\n  \"discount_type\": \"percent\",\n  \"discount_value\": 20,\n  \"minimum_purchase\": 30,\n  \"maximum_discount\": 50,\n  \"usage_limit\": 1000\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Promotion",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/promotions/{{promo_id}}",
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": false\n}" }
+          }
+        },
+        { "name": "Delete Promotion", "request": { "method": "DELETE", "url": "{{base_url}}/promotions/{{promo_id}}" } }
+      ]
+    },
+    {
+      "name": "Pricing Engine",
+      "item": [
+        {
+          "name": "Pricing Preview (persists)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/pricing/preview",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{product_id}},\n  \"customer_id\": {{customer_id}},\n  \"quantity\": 5,\n  \"promo_code\": \"WELCOME20\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Rule Test (dry-run)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/pricing/test",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{product_id}},\n  \"customer_id\": {{customer_id}},\n  \"quantity\": 5\n}"
+            }
+          }
+        },
+        { "name": "Pricing History", "request": { "method": "GET", "url": "{{base_url}}/pricing/history?page=1&page_size=20" } }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Summary", "request": { "method": "GET", "url": "{{base_url}}/dashboard/summary" } }
+      ]
+    },
+    {
+      "name": "Users (admin)",
+      "item": [
+        { "name": "List Users", "request": { "method": "GET", "url": "{{base_url}}/users?page=1&page_size=20" } },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/users/2/status",
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": false\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
